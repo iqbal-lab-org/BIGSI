@@ -1,4 +1,3 @@
-import os
 import math
 from tempfile import NamedTemporaryFile
 from bitarray import bitarray
