@@ -1,3 +1,4 @@
+import os
 import math
 from tempfile import NamedTemporaryFile
 from bitarray import bitarray
@@ -18,7 +19,8 @@ class BitMatrixReaderTest(TestCase):
         with NamedTemporaryFile() as tmp:
             tmp.write(bytes(1))
             tmp.flush()
-            BitMatrixReader(tmp.name, rows, cols)
+            with open(tmp.name, "rb") as infile:
+                BitMatrixReader(infile, rows, cols)
 
     @given(rows=st.integers(), cols=st.integers())
     def test_bit_matrix_reader_creation_failure(self, rows, cols):
@@ -27,8 +29,8 @@ class BitMatrixReaderTest(TestCase):
         with NamedTemporaryFile() as tmp:
             tmp.write(bytes(1))
             tmp.flush()
-            with self.assertRaises(Exception):
-                BitMatrixReader(tmp.name, rows, cols)
+            with open(tmp.name, "rb") as infile, self.assertRaises(Exception):
+                BitMatrixReader(infile, rows, cols)
 
     @staticmethod
     @given(cols=st.integers(min_value=1, max_value=8),
@@ -50,7 +52,8 @@ class BitMatrixReaderTest(TestCase):
         with NamedTemporaryFile() as tmp:
             tmp.write(bytes(byte_values))
             tmp.flush()
-            with BitMatrixReader(tmp.name, rows, cols) as bmr:
+            with open(tmp.name, "rb") as infile:
+                bmr = BitMatrixReader(infile, rows, cols)
                 for _ in range(rows):
                     result.append(next(bmr))
 
