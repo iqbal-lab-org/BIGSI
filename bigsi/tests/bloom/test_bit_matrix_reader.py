@@ -51,7 +51,7 @@ class BitMatrixReaderTest(TestCase):
             tmp.write(bytes(byte_values))
             tmp.flush()
             with BitMatrixReader(tmp.name, rows, cols) as bmr:
-                for this_row in bmr:
-                    result.append(this_row)
+                for _ in range(rows):
+                    result.append(next(bmr))
 
         assert result == expected
