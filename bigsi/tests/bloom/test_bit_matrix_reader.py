@@ -55,3 +55,18 @@ def test_bit_matrix_reader_iteration_success(cols, byte_values):
                 result.append(next(bmr))
 
     assert result == expected
+
+
+@given(cols=st.integers(min_value=1, max_value=8),
+       byte_values=st.lists(min_size=1, max_size=100, elements=st.integers(min_value=0, max_value=255)))
+def test_bit_matrix_reader_return_none_past_iteration(cols, byte_values):
+    rows = math.floor(len(byte_values) * 8 / cols)
+
+    with NamedTemporaryFile() as tmp:
+        tmp.write(bytes(byte_values))
+        tmp.flush()
+        with open(tmp.name, "rb") as infile:
+            bmr = BitMatrixReader(infile, rows, cols)
+            for _ in range(rows):
+                assert next(bmr) is not None
+            assert next(bmr) is None
