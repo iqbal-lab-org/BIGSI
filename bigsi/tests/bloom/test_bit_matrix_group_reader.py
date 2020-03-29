@@ -2,7 +2,6 @@ import math
 import pytest
 from tempfile import NamedTemporaryFile
 from bitarray import bitarray
-
 from hypothesis import given, strategies as st
 
 from bigsi.bloom import BitMatrixGroupReader
@@ -44,9 +43,8 @@ def test_bit_matrix_group_reader_open_matrices_failure(rows, cols, byte_values1,
         tmp2.write(bytes(byte_values2))
         tmp2.flush()
         input_paths = [tmp1.name, tmp2.name]
-        with pytest.raises(Exception):
-            with BitMatrixGroupReader(zip(input_paths, cols), rows):
-                pass
+        with pytest.raises(Exception), BitMatrixGroupReader(zip(input_paths, cols), rows):
+            pass
 
 
 @given(rows=st.integers(min_value=1, max_value=8),

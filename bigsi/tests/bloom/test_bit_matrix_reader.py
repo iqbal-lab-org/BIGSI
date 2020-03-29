@@ -2,7 +2,6 @@ import math
 import pytest
 from tempfile import NamedTemporaryFile
 from bitarray import bitarray
-
 from hypothesis import given, assume, strategies as st
 
 from bigsi.bloom import BitMatrixReader
@@ -12,22 +11,20 @@ from bigsi.bloom import BitMatrixReader
 def test_bit_matrix_reader_creation_success(rows, cols):
     assume(rows * cols <= 8)
 
-    with NamedTemporaryFile() as tmp:
+    with NamedTemporaryFile() as tmp, open(tmp.name, "rb") as infile:
         tmp.write(bytes(1))
         tmp.flush()
-        with open(tmp.name, "rb") as infile:
-            BitMatrixReader(infile, rows, cols)
+        BitMatrixReader(infile, rows, cols)
 
 
 @given(rows=st.integers(), cols=st.integers())
 def test_bit_matrix_reader_creation_failure(rows, cols):
     assume(rows * cols > 8 or rows * cols == 0)
 
-    with NamedTemporaryFile() as tmp:
+    with NamedTemporaryFile() as tmp, open(tmp.name, "rb") as infile, pytest.raises(Exception):
         tmp.write(bytes(1))
         tmp.flush()
-        with open(tmp.name, "rb") as infile, pytest.raises(Exception):
-            BitMatrixReader(infile, rows, cols)
+        BitMatrixReader(infile, rows, cols)
 
 
 @given(cols=st.integers(min_value=1, max_value=8),
@@ -46,13 +43,12 @@ def test_bit_matrix_reader_iteration_success(cols, byte_values):
         expected.append(this_bit_array)
 
     result = []
-    with NamedTemporaryFile() as tmp:
+    with NamedTemporaryFile() as tmp, open(tmp.name, "rb") as infile:
         tmp.write(bytes(byte_values))
         tmp.flush()
-        with open(tmp.name, "rb") as infile:
-            bmr = BitMatrixReader(infile, rows, cols)
-            for _ in range(rows):
-                result.append(next(bmr))
+        bmr = BitMatrixReader(infile, rows, cols)
+        for _ in range(rows):
+            result.append(next(bmr))
 
     assert result == expected
 
@@ -62,11 +58,10 @@ def test_bit_matrix_reader_iteration_success(cols, byte_values):
 def test_bit_matrix_reader_return_none_past_iteration(cols, byte_values):
     rows = math.floor(len(byte_values) * 8 / cols)
 
-    with NamedTemporaryFile() as tmp:
+    with NamedTemporaryFile() as tmp, open(tmp.name, "rb") as infile:
         tmp.write(bytes(byte_values))
         tmp.flush()
-        with open(tmp.name, "rb") as infile:
-            bmr = BitMatrixReader(infile, rows, cols)
-            for _ in range(rows):
-                assert next(bmr) is not None
-            assert next(bmr) is None
+        bmr = BitMatrixReader(infile, rows, cols)
+        for _ in range(rows):
+            assert next(bmr) is not None
+        assert next(bmr) is None

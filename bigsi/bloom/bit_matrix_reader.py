@@ -35,7 +35,6 @@ class BitMatrixReader(object):
             self._curr_chunk = bitarray()
             self._curr_chunk.fromfile(self._input, bytes_to_read)
             self._curr_chunk.reverse()
-            self._curr_row_index_in_curr_chunk = 0
 
         curr_row = bitarray()
         for _ in range(self._cols):
