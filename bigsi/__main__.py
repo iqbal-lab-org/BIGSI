@@ -25,6 +25,7 @@ from bigsi.cmds.delete import delete
 from bigsi.cmds.bloom import bloom
 from bigsi.cmds.build import build
 from bigsi.cmds.merge import merge
+from bigsi.cmds.merge_blooms import merge_blooms
 from bigsi.cmds.variant_search import BIGSIVariantSearch
 from bigsi.cmds.variant_search import BIGSIAminoAcidMutationSearch
 
@@ -129,6 +130,30 @@ class bigsi(object):
             outfile=outfile,
             kmers=extract_kmers_from_ctx(ctx, config["k"]),
         )
+
+    @hug.object.cli
+    def merge_blooms(
+        self,
+        from_file: hug.types.text = None,
+        out_file: hug.types.text = None,
+        m: hug.types.number = None
+    ):
+        if from_file is None:
+            raise ValueError("You need to specify a file which contains a list of bloom filters")
+        if out_file is None:
+            raise ValueError("You need to specify a file which the merged bloom matrix to write to")
+        if m is None:
+            raise ValueError("You need to specify the number of hash keys the bloom filters are created for")
+
+        input_paths = []
+        cols = []
+        with open(from_file, "r") as tsv_file:
+            reader = csv.reader(tsv_file, delimiter="\t")
+            for row in reader:
+                input_paths.append(row[0])
+                cols.append(len(row[1].split(",")))
+
+        merge_blooms(zip(input_paths, cols), m, out_file)
 
     @hug.object.cli
     @hug.object.post("/build", output_format=hug.output_format.pretty_json)
