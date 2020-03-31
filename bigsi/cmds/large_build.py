@@ -11,7 +11,7 @@ DB_INSERT_BATCH_SIZE = 1000
 
 def large_build(config, input_paths, cols, samples):
     storage = get_storage(config)
-    rows = config["m"]
+    rows = int(config["m"])
 
     with BitMatrixGroupReader(zip(input_paths, cols), rows) as bmgr:
         processed = 0
@@ -33,7 +33,7 @@ def large_build(config, input_paths, cols, samples):
 
     SampleMetadata(storage).add_samples(samples)
     storage.set_integer(BLOOM_FILTERS_SIZE_KEY, rows)
-    storage.set_integer(NUM_HASH_FUNCTIONS_KEY, config["h"])
+    storage.set_integer(NUM_HASH_FUNCTIONS_KEY, int(config["h"]))
     storage.set_integer(NUM_ROWS_KEY, rows)
     storage.set_integer(NUM_COLS_KEY, sum(cols))
     storage.sync()

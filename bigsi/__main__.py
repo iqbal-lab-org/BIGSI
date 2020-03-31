@@ -178,7 +178,7 @@ class bigsi(object):
                 cols.append(len(row[1].split(",")))
                 samples.extend(row[1].split(","))
 
-        large_build(config, input_paths, config, samples)
+        large_build(config, input_paths, cols, samples)
 
     @hug.object.cli
     @hug.object.post("/build", output_format=hug.output_format.pretty_json)
