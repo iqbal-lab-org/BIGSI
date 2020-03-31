@@ -24,6 +24,7 @@ from bigsi.cmds.insert import insert
 from bigsi.cmds.delete import delete
 from bigsi.cmds.bloom import bloom
 from bigsi.cmds.build import build
+from bigsi.cmds.large_build import large_build
 from bigsi.cmds.merge import merge
 from bigsi.cmds.merge_blooms import merge_blooms
 from bigsi.cmds.variant_search import BIGSIVariantSearch
@@ -154,6 +155,30 @@ class bigsi(object):
                 cols.append(len(row[1].split(",")))
 
         merge_blooms(zip(input_paths, cols), m, out_file)
+
+    @hug.object.cli
+    def large_build(
+        self,
+        from_file: hug.types.text = None,
+        config: hug.types.text = None,
+    ):
+        if from_file is None:
+            raise ValueError("You need to specify a file which contains a list of bloom filters")
+        if config is None:
+            raise ValueError("You need to specify a config file")
+
+        config = get_config_from_file(config)
+        samples = []
+        input_paths = []
+        cols = []
+        with open(from_file, "r") as tsv_file:
+            reader = csv.reader(tsv_file, delimiter="\t")
+            for row in reader:
+                input_paths.append(row[0])
+                cols.append(len(row[1].split(",")))
+                samples.extend(row[1].split(","))
+
+        large_build(config, input_paths, config, samples)
 
     @hug.object.cli
     @hug.object.post("/build", output_format=hug.output_format.pretty_json)
