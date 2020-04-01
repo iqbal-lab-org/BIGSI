@@ -34,13 +34,9 @@ def test_bit_matrix_reader_iteration_success(cols, byte_values):
 
     bit_array = bitarray()
     bit_array.frombytes(bytes(byte_values))
-    bit_array.reverse()
     expected = []
-    for _ in range(rows):
-        this_bit_array = bitarray()
-        for _ in range(cols):
-            this_bit_array.append(bit_array.pop())
-        expected.append(this_bit_array)
+    for row in range(rows):
+        expected.append(bit_array[row*cols:(row+1)*cols])
 
     result = []
     with NamedTemporaryFile() as tmp, open(tmp.name, "rb") as infile:

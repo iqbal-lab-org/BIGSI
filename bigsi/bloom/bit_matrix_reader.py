@@ -34,11 +34,8 @@ class BitMatrixReader(object):
                 bytes_to_read = math.ceil((rows_in_curr_chunk * self._cols) / 8)
             self._curr_chunk = bitarray()
             self._curr_chunk.fromfile(self._input, bytes_to_read)
-            self._curr_chunk.reverse()
 
-        curr_row = bitarray()
-        for _ in range(self._cols):
-            curr_row.append(self._curr_chunk.pop())
+        curr_row = self._curr_chunk[self._curr_row_index_in_curr_chunk*self._cols:(self._curr_row_index_in_curr_chunk+1)*self._cols]
 
         self._curr_row_index_in_total = self._curr_row_index_in_total + 1
         self._curr_row_index_in_curr_chunk = self._curr_row_index_in_curr_chunk + 1
