@@ -149,10 +149,11 @@ class bigsi(object):
         input_paths = []
         cols = []
         with open(from_file, "r") as tsv_file:
-            reader = csv.reader(tsv_file, delimiter="\t")
-            for row in reader:
-                input_paths.append(row[0])
-                cols.append(len(row[1].split(",")))
+            line = tsv_file.readline()
+            line = line.strip()
+            row = line.split(sep="\t")
+            input_paths.append(row[0])
+            cols.append(len(row[1].split(",")))
 
         merge_blooms(zip(input_paths, cols), m, out_file)
 
@@ -172,11 +173,12 @@ class bigsi(object):
         input_paths = []
         cols = []
         with open(from_file, "r") as tsv_file:
-            reader = csv.reader(tsv_file, delimiter="\t")
-            for row in reader:
-                input_paths.append(row[0])
-                cols.append(len(row[1].split(",")))
-                samples.extend(row[1].split(","))
+            line = tsv_file.readline()
+            line = line.strip()
+            row = line.split(sep="\t")
+            input_paths.append(row[0])
+            cols.append(len(row[1].split(",")))
+            samples.extend(row[1].split(","))
 
         large_build(config, input_paths, cols, samples)
 
