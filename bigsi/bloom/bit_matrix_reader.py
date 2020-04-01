@@ -2,6 +2,8 @@ import os
 import math
 from bitarray import bitarray
 
+ROWS_PER_CHUNK = 80  # must be divisible by 8. somewhere around 80 seems optimal
+
 
 class BitMatrixReader(object):
     def __init__(self, infile, rows, cols):
@@ -23,13 +25,13 @@ class BitMatrixReader(object):
         if self._curr_row_index_in_total >= self._rows:
             return None
 
-        if self._curr_row_index_in_curr_chunk == 8:
+        if self._curr_row_index_in_curr_chunk == ROWS_PER_CHUNK:
             self._curr_row_index_in_curr_chunk = 0
 
         if self._curr_row_index_in_curr_chunk == 0:
-            bytes_to_read = self._cols
+            bytes_to_read = math.ceil((ROWS_PER_CHUNK * self._cols) / 8)
             rows_left = self._rows - self._curr_row_index_in_total
-            if rows_left < 8:
+            if rows_left < ROWS_PER_CHUNK:
                 rows_in_curr_chunk = rows_left
                 bytes_to_read = math.ceil((rows_in_curr_chunk * self._cols) / 8)
             self._curr_chunk = bitarray()
