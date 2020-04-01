@@ -1,6 +1,8 @@
 import os
 from bitarray import bitarray
 
+ROWS_PER_CHUNK = 80  # must be divisible by 8. somewhere around 80 seems optimal
+
 
 class BitMatrixWriter(object):
     def __init__(self, outfile, rows, cols):
@@ -33,7 +35,7 @@ class BitMatrixWriter(object):
         self._curr_row_index_in_total = self._curr_row_index_in_total + 1
         self._curr_row_index_in_curr_chunk = self._curr_row_index_in_curr_chunk + 1
 
-        if self._curr_row_index_in_curr_chunk == 8 or self._curr_row_index_in_total == self._rows:
+        if self._curr_row_index_in_curr_chunk == ROWS_PER_CHUNK or self._curr_row_index_in_total == self._rows:
             self._curr_chunk.tofile(self._output)
             self._curr_chunk = None
             self._curr_row_index_in_curr_chunk = 0
