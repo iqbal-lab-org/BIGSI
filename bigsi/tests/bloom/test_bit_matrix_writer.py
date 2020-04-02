@@ -27,25 +27,26 @@ def test_bit_matrix_writer_creation_failure(rows, cols):
 def test_bit_matrix_writer_write_success(cols, byte_values):
     rows = math.floor(len(byte_values) * 8 / cols)
 
-    expected = []
-    with NamedTemporaryFile() as tmp1, open(tmp1.name, "rb") as infile:
-        tmp1.write(bytes(byte_values))
-        tmp1.flush()
-        bmr = BitMatrixReader(infile, rows, cols)
+    bit_array = bitarray()
+    bit_arrays = []
+    with NamedTemporaryFile() as tmp_for_write, open(tmp_for_write.name, "rb") as tmp_for_read:
+        tmp_for_write.write(bytes(byte_values))
+        tmp_for_write.flush()
+        bmr = BitMatrixReader(tmp_for_read, rows, cols)
         for _ in range(rows):
-            expected.append(next(bmr))
+            this_row = next(bmr)
+            bit_array.extend(this_row)
+            bit_arrays.append(this_row)
 
-    result = []
-    with NamedTemporaryFile() as tmp2:
-        with BitMatrixWriter(tmp2, rows, cols) as bmw:
-            for bit_array in expected:
-                bmw.write(bit_array)
-        with open(tmp2.name, "rb") as infile:
-            bmr = BitMatrixReader(infile, rows, cols)
-            for _ in range(rows):
-                result.append(next(bmr))
-
-    assert result == expected
+    with NamedTemporaryFile() as expected_for_write, open(expected_for_write.name, "rb") as expected_for_read:
+        bit_array.tofile(expected_for_write)
+        expected_for_write.flush()
+        with NamedTemporaryFile() as result_for_write:
+            with BitMatrixWriter(result_for_write, rows, cols) as bmw:
+                for bit_array in bit_arrays:
+                    bmw.write(bit_array)
+            with open(result_for_write.name, "rb") as result_for_read:
+                assert result_for_read.read() == expected_for_read.read()
 
 
 @given(cols=st.integers(min_value=1, max_value=8),
