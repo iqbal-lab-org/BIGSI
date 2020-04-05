@@ -2,15 +2,16 @@ import math
 import pytest
 from tempfile import NamedTemporaryFile
 from bitarray import bitarray
-from hypothesis import given, strategies as st
+from hypothesis import assume, given, strategies as st
 
 from bigsi.bloom import BitMatrixGroupReader
 
 
 @given(rows=st.integers(),
-       cols=st.lists(elements=st.integers(), min_size=2, max_size=2),
-       input_paths=st.lists(elements=st.uuids(), min_size=2, max_size=2))
+       cols=st.lists(elements=st.integers(), min_size=1, max_size=100),
+       input_paths=st.lists(elements=st.uuids(), min_size=1, max_size=100))
 def test_bit_matrix_group_reader_creation_success(rows, cols, input_paths):
+    assume(len(input_paths) == len(cols))
     BitMatrixGroupReader(zip(input_paths, cols), rows)
 
 
@@ -57,16 +58,12 @@ def test_bit_matrix_group_reader_iteration_success(rows, byte_values1, byte_valu
     expected = []
     bit_array1 = bitarray()
     bit_array1.frombytes(bytes(byte_values1))
-    bit_array1.reverse()
     bit_array2 = bitarray()
     bit_array2.frombytes(bytes(byte_values2))
-    bit_array2.reverse()
-    for _ in range(rows):
+    for row in range(rows):
         curr_row = bitarray()
-        for _ in range(cols1):
-            curr_row.append(bit_array1.pop())
-        for _ in range(cols2):
-            curr_row.append(bit_array2.pop())
+        curr_row.extend(bit_array1[row*cols1:(row+1)*cols1])
+        curr_row.extend(bit_array2[row*cols2:(row+1)*cols2])
         expected.append(curr_row)
 
     result = []

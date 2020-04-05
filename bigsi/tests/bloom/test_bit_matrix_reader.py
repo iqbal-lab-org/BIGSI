@@ -2,7 +2,7 @@ import math
 import pytest
 from tempfile import NamedTemporaryFile
 from bitarray import bitarray
-from hypothesis import given, assume, strategies as st
+from hypothesis import assume, given, strategies as st
 
 from bigsi.bloom import BitMatrixReader
 
