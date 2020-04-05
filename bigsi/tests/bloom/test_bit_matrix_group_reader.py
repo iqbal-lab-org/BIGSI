@@ -66,7 +66,6 @@ def test_bit_matrix_group_reader_iteration_success(rows, byte_values1, byte_valu
         curr_row.extend(bit_array2[row*cols2:(row+1)*cols2])
         expected.append(curr_row)
 
-    result = []
     with NamedTemporaryFile() as tmp1, NamedTemporaryFile() as tmp2:
         tmp1.write(bytes(byte_values1))
         tmp1.flush()
@@ -75,8 +74,7 @@ def test_bit_matrix_group_reader_iteration_success(rows, byte_values1, byte_valu
         input_paths = [tmp1.name, tmp2.name]
         cols = [cols1, cols2]
         with BitMatrixGroupReader(zip(input_paths, cols), rows) as bmgr:
-            for _ in range(rows):
-                result.append(next(bmgr))
+            result = [row for row in bmgr]
 
     assert result == expected
 
@@ -84,7 +82,7 @@ def test_bit_matrix_group_reader_iteration_success(rows, byte_values1, byte_valu
 @given(rows=st.integers(min_value=1, max_value=8),
        byte_values1=st.lists(min_size=1, max_size=100, elements=st.integers(min_value=0, max_value=255)),
        byte_values2=st.lists(min_size=1, max_size=100, elements=st.integers(min_value=0, max_value=255)))
-def test_bit_matrix_group_reader_return_none_past_iteration(rows, byte_values1, byte_values2):
+def test_bit_matrix_group_reader_raise_exception_past_iteration(rows, byte_values1, byte_values2):
     cols1 = math.floor(len(byte_values1) * 8 / rows)
     cols2 = math.floor(len(byte_values2) * 8 / rows)
 
@@ -96,6 +94,7 @@ def test_bit_matrix_group_reader_return_none_past_iteration(rows, byte_values1, 
         input_paths = [tmp1.name, tmp2.name]
         cols = [cols1, cols2]
         with BitMatrixGroupReader(zip(input_paths, cols), rows) as bmgr:
-            for _ in range(rows):
-                assert next(bmgr) is not None
-            assert next(bmgr) is None
+            for _ in bmgr:
+                pass
+            with pytest.raises(StopIteration):
+                next(bmgr)

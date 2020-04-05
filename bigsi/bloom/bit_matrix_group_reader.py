@@ -27,8 +27,5 @@ class BitMatrixGroupReader(object):
     def __next__(self):
         result = bitarray()
         for bit_matrix_reader in self._bit_matrix_readers:
-            next_row = next(bit_matrix_reader)
-            if next_row is None:
-                return None
-            result.extend(next_row)
+            result.extend(next(bit_matrix_reader))
         return result

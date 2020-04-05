@@ -23,7 +23,7 @@ class BitMatrixReader(object):
 
     def __next__(self):
         if self._curr_row_index_in_matrix >= self._rows:
-            return None
+            raise StopIteration
 
         if self._curr_row_index_in_slice == ROWS_PER_SLICE:
             self._curr_row_index_in_slice = 0
