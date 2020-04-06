@@ -5,7 +5,26 @@ ROWS_PER_SLICE = 80  # must be divisible by 8. somewhere around 80 seems optimal
 
 
 class BitMatrixWriter(object):
+    """
+    Writer to store a bit matrix in a binary file. The matrix is stored row by row, sequentially.
+
+    :Example:
+    >>> bitarrays = [bitarray(1), bitarray(1)]
+    >>> with open("output", "wb") as outfile, BitMatrixWriter(outfile, num_rows, num_cols) as bmw:
+    >>>     for row in bitarrays:
+    >>>         bmw.write(row)
+    """
     def __init__(self, outfile, num_rows, num_cols):
+        """
+        Constructor
+
+        :param outfile: the opened file handle for output
+        :type outfile: File
+        :param num_rows: the number of rows for the bit matrix stored in the input file
+        :type num_rows: number
+        :param num_cols: the number of columns for the bit matrix stored in the input file
+        :type num_cols: number
+        """
         self._output = outfile
         self._num_rows = num_rows
         self._num_cols = num_cols
@@ -25,6 +44,12 @@ class BitMatrixWriter(object):
         self._output.flush()
 
     def write(self, bit_array):
+        """
+        Append a row to the end of output file
+
+        :param bit_array: the row to be written to the output
+        :type bit_array: bitarray
+        """
         if self._curr_row_index_in_matrix >= self._num_rows:
             raise Exception("Bit matrix is already full at " + self._output.name)
 

@@ -133,6 +133,22 @@ class bigsi(object):
         out_file: hug.types.text = None,
         m: hug.types.number = None
     ):
+        """
+        Merge multiple bloom filters/matrices into one bloom matrix.
+
+        The input bloom filters/matrices could have different numbers of columns, but they should all
+        have the same number of rows. The output matrix will have the same number of rows and it will
+        have all the columns from the input, arranged in the order in which the input are specified.
+
+        :param  from_file: input data file path. The input file should contain lines, each of which specifies
+                            a file path for a bloom filter/matrix together with a list of samples (comma separated)
+                            associated with the bloom filter/matrix.
+        :type   from_file: basestring
+        :param  out_file: output file path
+        :type   out_file: basestring
+        :param  m: the number of rows
+        :type   m: number
+        """
         if from_file is None:
             raise ValueError("You need to specify a file which contains a list of bloom filters")
         if out_file is None:
@@ -158,6 +174,22 @@ class bigsi(object):
         from_file: hug.types.text = None,
         config: hug.types.text = None,
     ):
+        """
+        Build one bigsi index from multiple bloom filters/matrices.
+
+        The input bloom filters/matrices could have different numbers of columns, but they should all
+        have the same number of rows. The bigsi index will have the same number of rows and it will
+        have all the columns from the input, arranged in the order in which the input are specified.
+
+        This function could replace `build` function below.
+
+        :param  from_file: input data file path. The input file should contain lines, each of which specifies
+                            a file path for a bloom filter/matrix together with a list of samples (comma separated)
+                            associated with the bloom filter/matrix.
+        :type   from_file: basestring
+        :param  config: config file path
+        :type   config: basestring
+        """
         if from_file is None:
             raise ValueError("You need to specify a file which contains a list of bloom filters")
         if config is None:

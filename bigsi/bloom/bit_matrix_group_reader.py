@@ -4,7 +4,26 @@ from bigsi.bloom import BitMatrixReader
 
 
 class BitMatrixGroupReader(object):
+    """
+    Reader for a group of bit matrices stored in a of binary files. The matrices can be grouped together and read
+    row by row, sequentially.
+
+    :Example:
+    >>> input_paths = ["input.a", "input.b"]
+    >>> num_cols = [1, 2]
+    >>> with BitMatrixGroupReader(zip(input_paths, num_cols), num_rows) as bmgr
+    >>>     for row in bmgr:
+    >>>         print(row)
+    """
     def __init__(self, input_data, num_rows):
+        """
+        Constructor
+
+        :param input_data: list of tuples that contain input path and number of columns for bit matrices
+        :type input_data: list
+        :param num_rows: the number of rows for the bit matrices provided in the input_data
+        :type num_rows: number
+        """
         self._num_rows = num_rows
         self._input_data = input_data
 
@@ -25,6 +44,9 @@ class BitMatrixGroupReader(object):
         return self
 
     def __next__(self):
+        """
+        Return next available row in bitarray
+        """
         result = bitarray()
         for bit_matrix_reader in self._bit_matrix_readers:
             result.extend(next(bit_matrix_reader))

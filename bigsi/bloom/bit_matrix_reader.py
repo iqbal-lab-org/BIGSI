@@ -6,7 +6,25 @@ ROWS_PER_SLICE = 80  # must be divisible by 8. somewhere around 80 seems optimal
 
 
 class BitMatrixReader(object):
+    """
+    Reader for a bit matrix stored in a binary file. The matrix can be read row by row, sequentially.
+
+    :Example:
+    >>> with open("input", "rb") as infile:
+    >>>     for row in BitMatrixReader(infile, num_rows, num_cols):
+    >>>         print(row)
+    """
     def __init__(self, infile, num_rows, num_cols):
+        """
+        Constructor
+
+        :param infile: the opened file handle for input
+        :type infile: File
+        :param num_rows: the number of rows for the bit matrix stored in the input file
+        :type num_rows: number
+        :param num_cols: the number of columns for the bit matrix stored in the input file
+        :type num_cols: number
+        """
         self._input = infile
         self._num_rows = num_rows
         self._num_cols = num_cols
@@ -22,6 +40,9 @@ class BitMatrixReader(object):
         return self
 
     def __next__(self):
+        """
+        Return next available row in bitarray
+        """
         if self._curr_row_index_in_matrix >= self._num_rows:
             raise StopIteration
 
