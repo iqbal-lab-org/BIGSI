@@ -4,17 +4,17 @@ from bigsi.bloom import BitMatrixReader
 
 
 class BitMatrixGroupReader(object):
-    def __init__(self, bit_matrix_group, rows):
-        self._rows = rows
-        self._bit_matrix_group = bit_matrix_group
+    def __init__(self, input_data, num_rows):
+        self._num_rows = num_rows
+        self._input_data = input_data
 
     def __enter__(self):
         self._bit_matrix_files = []
         self._bit_matrix_readers = []
-        for path, cols in self._bit_matrix_group:
-            fd = open(path, "rb")
-            self._bit_matrix_files.append(fd)
-            self._bit_matrix_readers.append(BitMatrixReader(fd, self._rows, cols))
+        for input_path, num_cols in self._input_data:
+            infile = open(input_path, "rb")
+            self._bit_matrix_files.append(infile)
+            self._bit_matrix_readers.append(BitMatrixReader(infile, self._num_rows, num_cols))
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
