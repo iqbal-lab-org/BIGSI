@@ -11,7 +11,7 @@ from bigsi.bloom import BloomFilter
 from bigsi.utils import convert_query_kmers
 from bigsi.utils import seq_to_kmers
 from bigsi.utils import bitwise_and
-from bigsi.utils import non_zero_bitarrary_positions
+from bigsi.utils import non_zero_bitarray_positions
 from bigsi.storage import get_storage
 from bigsi.scoring import Scorer
 from bigsi.constants import DEFAULT_NPROC
@@ -190,7 +190,7 @@ class BIGSI(SampleMetadata, KmerSignatureIndex):
         ]
 
     def exact_filter(self, kmers_to_colours):
-        colours_with_all_kmers = non_zero_bitarrary_positions(
+        colours_with_all_kmers = non_zero_bitarray_positions(
             bitwise_and(kmers_to_colours.values())
         )
         samples = self.get_sample_list(colours_with_all_kmers)

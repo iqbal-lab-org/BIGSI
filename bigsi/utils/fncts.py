@@ -21,7 +21,7 @@ def bitwise_and(bitarrays):
     return reduce(lambda x, y: x & y, bitarrays)
 
 
-def non_zero_bitarrary_positions(bitarray):
+def non_zero_bitarray_positions(bitarray):
     return [index for index in range(len(bitarray)) if bitarray[index]]
 
 
