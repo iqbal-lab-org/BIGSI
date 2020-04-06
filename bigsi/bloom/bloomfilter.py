@@ -18,6 +18,7 @@ class BloomFilter(object):
         self.m = m
         self.h = h
         self.bitarray = bitarray(self.m)
+        self.bitarray.setall(0)
 
     def __hashes(self, element):
         return generate_hashes(element, self.h, self.m)
