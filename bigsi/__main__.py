@@ -1,16 +1,12 @@
 #! /usr/bin/env python
 from __future__ import print_function
-import sys
 import os
 import io
 import csv
-import argparse
-import redis
 import json
 import math
 import logging
 import hug
-import tempfile
 import humanfriendly
 import yaml
 import copy
@@ -21,7 +17,6 @@ from bigsi.version import __version__
 from bigsi.graph import BIGSI
 
 from bigsi.cmds.insert import insert
-from bigsi.cmds.delete import delete
 from bigsi.cmds.bloom import bloom
 from bigsi.cmds.build import build
 from bigsi.cmds.large_build import large_build
@@ -33,7 +28,6 @@ from bigsi.cmds.variant_search import BIGSIAminoAcidMutationSearch
 from bigsi.storage import get_storage
 
 from bigsi.utils.cortex import extract_kmers_from_ctx
-from bigsi.utils import seq_to_kmers
 from bigsi.constants import DEFAULT_CONFIG
 
 logging.basicConfig(level=logging.DEBUG)
@@ -146,17 +140,17 @@ class bigsi(object):
         if m is None:
             raise ValueError("You need to specify the number of hash keys the bloom filters are created for")
 
-        input_paths = []
-        cols = []
+        input_path_list = []
+        num_cols_list = []
         with open(from_file, "r") as tsv_file:
             lines = tsv_file.readlines()
             for line in lines:
                 line = line.strip()
                 row = line.split(sep="\t")
-                input_paths.append(row[0])
-                cols.append(len(row[1].split(",")))
+                input_path_list.append(row[0])
+                num_cols_list.append(len(row[1].split(",")))
 
-        merge_blooms(zip(input_paths, cols), m, out_file)
+        merge_blooms(zip(input_path_list, num_cols_list), m, out_file)
 
     @hug.object.cli
     def large_build(
@@ -170,19 +164,19 @@ class bigsi(object):
             raise ValueError("You need to specify a config file")
 
         config = get_config_from_file(config)
-        samples = []
-        input_paths = []
-        cols = []
+        sample_list = []
+        input_path_list = []
+        num_cols_list = []
         with open(from_file, "r") as tsv_file:
             lines = tsv_file.readlines()
             for line in lines:
                 line = line.strip()
                 row = line.split(sep="\t")
-                input_paths.append(row[0])
-                cols.append(len(row[1].split(",")))
-                samples.extend(row[1].split(","))
+                input_path_list.append(row[0])
+                num_cols_list.append(len(row[1].split(",")))
+                sample_list.extend(row[1].split(","))
 
-        large_build(config, input_paths, cols, samples)
+        large_build(config, input_path_list, num_cols_list, sample_list)
 
     @hug.object.cli
     @hug.object.post("/build", output_format=hug.output_format.pretty_json)
