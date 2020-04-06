@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 from functools import reduce
 from itertools import islice, chain
 
@@ -22,7 +23,7 @@ def bitwise_and(bitarrays):
 
 
 def non_zero_bitarray_positions(bitarray):
-    return [index for index in range(len(bitarray)) if bitarray[index]]
+    return np.where(np.unpackbits(bitarray))[0].tolist()
 
 
 def chunks(l, n):
