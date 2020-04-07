@@ -91,9 +91,6 @@ def test_exact_search():
         bigsi.delete()
 
 
-@pytest.mark.skip(
-    reason="Passes in isolation, but fails when run with the rest of the tests"
-)
 def test_inexact_search():
     for config in CONFIGS:
         get_storage(config).delete_all()
