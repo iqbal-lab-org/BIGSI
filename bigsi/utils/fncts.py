@@ -1,9 +1,6 @@
-import hashlib
-import struct
-import sys
 import logging
-from functools import reduce
 import numpy as np
+from functools import reduce
 from itertools import islice, chain
 
 logger = logging.getLogger(__name__)
@@ -25,8 +22,8 @@ def bitwise_and(bitarrays):
     return reduce(lambda x, y: x & y, bitarrays)
 
 
-def non_zero_bitarrary_positions(bitarray):
-    return np.where(bitarray)[0].tolist()
+def non_zero_bitarray_positions(bitarray):
+    return np.where(np.unpackbits(bitarray))[0].tolist()
 
 
 def chunks(l, n):

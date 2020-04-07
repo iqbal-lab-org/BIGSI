@@ -1,4 +1,4 @@
 # Optional Storage
-python-rocksdb
+#python-rocksdb # temporarily commented out so that installation will not fail if not using RocksDB
 bsddb3==6.2.5
 uWSGI==2.0.18

@@ -18,6 +18,7 @@ class BloomFilter(object):
         self.m = m
         self.h = h
         self.bitarray = bitarray(self.m)
+        self.bitarray.setall(0)
 
     def __hashes(self, element):
         return generate_hashes(element, self.h, self.m)
@@ -30,10 +31,3 @@ class BloomFilter(object):
         for e in list(elements):
             self.add(e)
         return self
-
-
-def load_bitarray(f):
-    bloomfilter = bitarray()
-    with open(f, "rb") as inf:
-        bloomfilter.fromfile(inf)
-    return bloomfilter
