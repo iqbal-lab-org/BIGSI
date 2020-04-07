@@ -1,7 +1,8 @@
 import math
+from datetime import timedelta
 from tempfile import NamedTemporaryFile
 from bitarray import bitarray
-from hypothesis import given, strategies as st
+from hypothesis import given, settings, strategies as st
 
 from bigsi.bloom.bit_matrix_reader import BitMatrixReader
 from bigsi.cmds.large_build import large_build
@@ -22,6 +23,7 @@ def _get_bigsi_index_config(num_rows, db):
     }
 
 
+@settings(deadline=timedelta(milliseconds=1000))
 @given(num_rows=st.integers(min_value=1, max_value=8),
        byte_values1=st.lists(min_size=1, max_size=100, elements=st.integers(min_value=0, max_value=255)),
        byte_values2=st.lists(min_size=1, max_size=100, elements=st.integers(min_value=0, max_value=255)))
