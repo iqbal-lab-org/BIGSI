@@ -31,10 +31,3 @@ class BloomFilter(object):
         for e in list(elements):
             self.add(e)
         return self
-
-
-def load_bitarray(f):
-    bloomfilter = bitarray()
-    with open(f, "rb") as inf:
-        bloomfilter.fromfile(inf)
-    return bloomfilter
