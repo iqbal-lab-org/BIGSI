@@ -11,11 +11,6 @@ def flatten(l):
     return [item for sublist in l for item in sublist]
 
 
-def filter_bigsi_var_results(d):
-    d["results"] = [x for x in d.get("results", []) if x["genotype"] != "0/0"]
-    return d
-
-
 class BIGSIVariantSearch(object):
     def __init__(self, bigsi, reference):
         self.bigsi = bigsi
@@ -35,10 +30,7 @@ class BIGSIVariantSearch(object):
                 refs.append(str(v))
             else:
                 alts.append(str(v))
-        out = {"query": var_name, "results": self.genotype_alleles(refs, alts)}
-        out = filter_bigsi_var_results(out)
-        logger.info(out)
-        return out
+        return {"query": var_name, "results": self.genotype_alleles(refs, alts)}
 
     def search_for_alleles(self, ref_seqs, alt_seqs):
         results = {"ref": [], "alt": []}
@@ -102,7 +94,6 @@ class BIGSIAminoAcidMutationSearch(BIGSIVariantSearch):
                 self.reference,
             ]
         )
-        logger.info(fasta_string)
         return fasta_string
 
     def search(self, gene, ref, pos, alt):
@@ -121,7 +112,4 @@ class BIGSIAminoAcidMutationSearch(BIGSIVariantSearch):
                 refs.append(str(v))
             else:
                 alts.append(str(v))
-        out = {"query": gene_mut_name, "results": self.genotype_alleles(refs, alts)}
-        out = filter_bigsi_var_results(out)
-        logger.info(out)
-        return out
+        return {"query": gene_mut_name, "results": self.genotype_alleles(refs, alts)}
