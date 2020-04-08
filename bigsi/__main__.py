@@ -131,7 +131,7 @@ class bigsi(object):
         self,
         from_file: hug.types.text = None,
         out_file: hug.types.text = None,
-        m: hug.types.number = None
+        num_rows: hug.types.number = None
     ):
         """
         Merge multiple bloom filters/matrices into one bloom matrix.
@@ -146,27 +146,26 @@ class bigsi(object):
         :type   from_file: basestring
         :param  out_file: output file path
         :type   out_file: basestring
-        :param  m: the number of rows
-        :type   m: number
+        :param  num_rows: the number of rows
+        :type   num_rows: number
         """
         if from_file is None:
             raise ValueError("You need to specify a file which contains a list of bloom filters")
         if out_file is None:
             raise ValueError("You need to specify a file which the merged bloom matrix to write to")
-        if m is None:
+        if num_rows is None:
             raise ValueError("You need to specify the number of hash keys the bloom filters are created for")
 
         input_path_list = []
         num_cols_list = []
         with open(from_file, "r") as tsv_file:
-            lines = tsv_file.readlines()
-            for line in lines:
+            for line in tsv_file:
                 line = line.strip()
                 row = line.split(sep="\t")
                 input_path_list.append(row[0])
                 num_cols_list.append(len(row[1].split(",")))
 
-        merge_blooms(zip(input_path_list, num_cols_list), m, out_file)
+        merge_blooms(zip(input_path_list, num_cols_list), num_rows, out_file)
 
     @hug.object.cli
     def large_build(
@@ -200,8 +199,7 @@ class bigsi(object):
         input_path_list = []
         num_cols_list = []
         with open(from_file, "r") as tsv_file:
-            lines = tsv_file.readlines()
-            for line in lines:
+            for line in tsv_file:
                 line = line.strip()
                 row = line.split(sep="\t")
                 input_path_list.append(row[0])
