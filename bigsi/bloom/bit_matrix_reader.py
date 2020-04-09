@@ -1,5 +1,6 @@
 import os
 import math
+from typing import BinaryIO
 from bitarray import bitarray
 
 ROWS_PER_SLICE = 80  # must be divisible by 8. somewhere around 80 seems optimal
@@ -14,12 +15,12 @@ class BitMatrixReader(object):
     >>>     for row in BitMatrixReader(infile, num_rows, num_cols):
     >>>         print(row)
     """
-    def __init__(self, infile, num_rows, num_cols):
+    def __init__(self, infile: BinaryIO, num_rows: int, num_cols: int) -> None:
         """
         Constructor
 
         :param infile: the opened file handle for input
-        :type infile: File
+        :type infile: BinaryIO
         :param num_rows: the number of rows for the bit matrix stored in the input file
         :type num_rows: number
         :param num_cols: the number of columns for the bit matrix stored in the input file
@@ -39,7 +40,7 @@ class BitMatrixReader(object):
     def __iter__(self):
         return self
 
-    def __next__(self):
+    def __next__(self) -> bitarray:
         """
         Return next available row in bitarray
         """

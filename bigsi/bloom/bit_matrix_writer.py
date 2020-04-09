@@ -1,4 +1,5 @@
 import os
+from typing import BinaryIO
 from bitarray import bitarray
 
 ROWS_PER_SLICE = 80  # must be divisible by 8. somewhere around 80 seems optimal
@@ -14,12 +15,12 @@ class BitMatrixWriter(object):
     >>>     for row in bitarrays:
     >>>         bmw.write(row)
     """
-    def __init__(self, outfile, num_rows, num_cols):
+    def __init__(self, outfile: BinaryIO, num_rows: int, num_cols: int) -> None:
         """
         Constructor
 
         :param outfile: the opened file handle for output
-        :type outfile: File
+        :type outfile: BinaryIO
         :param num_rows: the number of rows for the bit matrix stored in the input file
         :type num_rows: number
         :param num_cols: the number of columns for the bit matrix stored in the input file
@@ -43,7 +44,7 @@ class BitMatrixWriter(object):
             self._curr_slice.tofile(self._output)
         self._output.flush()
 
-    def write(self, bit_array):
+    def write(self, bit_array: bitarray) -> None:
         """
         Append a row to the end of output file
 

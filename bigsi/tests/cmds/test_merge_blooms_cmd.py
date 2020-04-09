@@ -1,5 +1,6 @@
 import math
 from tempfile import NamedTemporaryFile
+from typing import List
 from bitarray import bitarray
 from hypothesis import given, strategies as st
 
@@ -9,7 +10,7 @@ from bigsi.cmds.merge_blooms import merge_blooms
 @given(num_rows=st.integers(min_value=1, max_value=8),
        byte_values1=st.lists(min_size=1, max_size=100, elements=st.integers(min_value=0, max_value=255)),
        byte_values2=st.lists(min_size=1, max_size=100, elements=st.integers(min_value=0, max_value=255)))
-def test_merge_blooms_cmd_success(num_rows, byte_values1, byte_values2):
+def test_merge_blooms_cmd_success(num_rows: int, byte_values1: List[int], byte_values2: List[int]):
     num_cols1 = math.floor(len(byte_values1) * 8 / num_rows)
     num_cols2 = math.floor(len(byte_values2) * 8 / num_rows)
 

@@ -1,3 +1,4 @@
+from typing import List
 from bigsi.storage import get_storage
 from bigsi.graph.metadata import SampleMetadata
 from bigsi.bloom import BitMatrixGroupReader
@@ -9,7 +10,7 @@ NUM_COLS_KEY = "number_of_cols"
 DB_INSERT_BATCH_SIZE = 1000
 
 
-def large_build(config, input_path_list, num_cols_list, sample_list):
+def large_build(config: str, input_path_list: List[str], num_cols_list: List[int], sample_list: List[str]):
     storage = get_storage(config)
     num_rows = int(config["m"])
 

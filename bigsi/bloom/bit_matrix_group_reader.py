@@ -1,3 +1,4 @@
+from typing import List, Tuple
 from bitarray import bitarray
 
 from bigsi.bloom import BitMatrixReader
@@ -15,7 +16,7 @@ class BitMatrixGroupReader(object):
     >>>     for row in bmgr:
     >>>         print(row)
     """
-    def __init__(self, input_data, num_rows):
+    def __init__(self, input_data: List[Tuple[str, int]], num_rows: int) -> None:
         """
         Constructor
 
@@ -43,7 +44,7 @@ class BitMatrixGroupReader(object):
     def __iter__(self):
         return self
 
-    def __next__(self):
+    def __next__(self) -> bitarray:
         """
         Return next available row in bitarray
         """
