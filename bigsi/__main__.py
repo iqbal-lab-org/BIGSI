@@ -1,16 +1,12 @@
 #! /usr/bin/env python
 from __future__ import print_function
-import sys
 import os
 import io
 import csv
-import argparse
-import redis
 import json
 import math
 import logging
 import hug
-import tempfile
 import humanfriendly
 import yaml
 import copy
@@ -21,17 +17,17 @@ from bigsi.version import __version__
 from bigsi.graph import BIGSI
 
 from bigsi.cmds.insert import insert
-from bigsi.cmds.delete import delete
 from bigsi.cmds.bloom import bloom
 from bigsi.cmds.build import build
+from bigsi.cmds.large_build import large_build
 from bigsi.cmds.merge import merge
+from bigsi.cmds.merge_blooms import merge_blooms
 from bigsi.cmds.variant_search import BIGSIVariantSearch
 from bigsi.cmds.variant_search import BIGSIAminoAcidMutationSearch
 
 from bigsi.storage import get_storage
 
 from bigsi.utils.cortex import extract_kmers_from_ctx
-from bigsi.utils import seq_to_kmers
 from bigsi.constants import DEFAULT_CONFIG
 
 logging.basicConfig(level=logging.DEBUG)
@@ -129,6 +125,88 @@ class bigsi(object):
             outfile=outfile,
             kmers=extract_kmers_from_ctx(ctx, config["k"]),
         )
+
+    @hug.object.cli
+    def merge_blooms(
+        self,
+        from_file: hug.types.text = None,
+        out_file: hug.types.text = None,
+        num_rows: hug.types.number = None
+    ):
+        """
+        Merge multiple bloom filters/matrices into one bloom matrix.
+
+        The input bloom filters/matrices could have different numbers of columns, but they should all
+        have the same number of rows. The output matrix will have the same number of rows and it will
+        have all the columns from the input, arranged in the order in which the input are specified.
+
+        :param  from_file: input data file path. The input file should contain lines, each of which specifies
+                            a file path for a bloom filter/matrix together with a list of samples (comma separated)
+                            associated with the bloom filter/matrix.
+        :type   from_file: basestring
+        :param  out_file: output file path
+        :type   out_file: basestring
+        :param  num_rows: the number of rows
+        :type   num_rows: number
+        """
+        if from_file is None:
+            raise ValueError("You need to specify a file which contains a list of bloom filters")
+        if out_file is None:
+            raise ValueError("You need to specify a file which the merged bloom matrix to write to")
+        if num_rows is None:
+            raise ValueError("You need to specify the number of hash keys the bloom filters are created for")
+
+        input_path_list = []
+        num_cols_list = []
+        with open(from_file, "r") as tsv_file:
+            for line in tsv_file:
+                line = line.strip()
+                row = line.split(sep="\t")
+                input_path_list.append(row[0])
+                num_cols_list.append(len(row[1].split(",")))
+
+        merge_blooms(zip(input_path_list, num_cols_list), num_rows, out_file)
+
+    @hug.object.cli
+    def large_build(
+        self,
+        from_file: hug.types.text = None,
+        config: hug.types.text = None,
+    ):
+        """
+        Build one bigsi index from multiple bloom filters/matrices.
+
+        The input bloom filters/matrices could have different numbers of columns, but they should all
+        have the same number of rows. The bigsi index will have the same number of rows and it will
+        have all the columns from the input, arranged in the order in which the input are specified.
+
+        This function could replace `build` function below.
+
+        :param  from_file: input data file path. The input file should contain lines, each of which specifies
+                            a file path for a bloom filter/matrix together with a list of samples (comma separated)
+                            associated with the bloom filter/matrix.
+        :type   from_file: basestring
+        :param  config: config file path
+        :type   config: basestring
+        """
+        if from_file is None:
+            raise ValueError("You need to specify a file which contains a list of bloom filters")
+        if config is None:
+            raise ValueError("You need to specify a config file")
+
+        config = get_config_from_file(config)
+        sample_list = []
+        input_path_list = []
+        num_cols_list = []
+        with open(from_file, "r") as tsv_file:
+            for line in tsv_file:
+                line = line.strip()
+                row = line.split(sep="\t")
+                input_path_list.append(row[0])
+                num_cols_list.append(len(row[1].split(",")))
+                sample_list.extend(row[1].split(","))
+
+        large_build(config, input_path_list, num_cols_list, sample_list)
 
     @hug.object.cli
     @hug.object.post("/build", output_format=hug.output_format.pretty_json)
